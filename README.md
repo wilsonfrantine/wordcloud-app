@@ -1,4 +1,3 @@
-```text
 # WordCloud – Word Cloud Generator (PT-BR/EN)
 
 A static, minimalist, and responsive app to generate **word clouds** directly in the browser. Ideal for GitHub Pages.
@@ -44,5 +43,3 @@ A static, minimalist, and responsive app to generate **word clouds** directly in
 
 ## 🙌 Citation
 Please **cite this repository** when using the app.
-```
-
