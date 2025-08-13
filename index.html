@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nuvem de Palavras • WordCloud</title>
+  <meta name="description" content="App simples e minimalista para criar nuvem de palavras.">
+  <!-- Google Fonts: três famílias -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Merriweather:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">WordCloud</div>
+    <div class="top-actions">
+      <button id="btnHelp" class="ghost">?</button>
+      <select id="langSelect" aria-label="Idioma">
+        <option value="pt-BR" selected>PT-BR</option>
+        <option value="en">EN</option>
+      </select>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="panel">
+      <h1 data-i18n="title">Gerador de Nuvem de Palavras</h1>
+
+      <div class="input-mode">
+        <label><input type="radio" name="mode" value="free" checked> <span data-i18n="mode_free">Texto livre</span></label>
+        <label><input type="radio" name="mode" value="pairs"> <span data-i18n="mode_pairs">Palavra + frequência</span></label>
+      </div>
+
+      <div id="freeInputWrap">
+        <label class="lbl" for="freeInput" data-i18n="free_label">Cole ou digite seu texto:</label>
+        <textarea id="freeInput" placeholder="Cole seu texto aqui..."></textarea>
+      </div>
+
+      <div id="pairsInputWrap" class="hidden">
+        <label class="lbl" for="pairsInput" data-i18n="pairs_label">Uma por linha (palavra,frequência):</label>
+        <textarea id="pairsInput" placeholder="ex. cafe,12&#10;abelhas,8&#10;biodiversidade,5"></textarea>
+        <div class="row">
+          <label class="small" for="sepSelect" data-i18n="sep_label">Separador:</label>
+          <select id="sepSelect">
+            <option value="comma">vírgula</option>
+            <option value="semicolon">ponto e vírgula</option>
+            <option value="tab">tab</option>
+            <option value="pipe">| (pipe)</option>
+            <option value="custom">custom</option>
+          </select>
+          <input id="sepCustom" class="hidden" type="text" placeholder="sep personalizado (regex ou caractere único)" />
+        </div>
+      </div>
+
+      <details class="opts">
+        <summary data-i18n="opts_title">Opções</summary>
+        <div class="grid-opts">
+          <div>
+            <label class="lbl" data-i18n="palette">Paleta</label>
+            <select id="palette">
+              <option value="viridis">Viridis</option>
+              <option value="plasma">Plasma</option>
+              <option value="cividis">Cividis</option>
+              <option value="warm">Warm</option>
+              <option value="cool">Cool</option>
+              <option value="mono">Mono</option>
+              <option value="contrast">Alto Contraste</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl" data-i18n="fontfam">Família de fonte</label>
+            <select id="fontFamily">
+              <option value="Inter, system-ui, sans-serif">Sans (Inter)</option>
+              <option value="Merriweather, Georgia, serif">Serif (Merriweather)</option>
+              <option value="JetBrains Mono, ui-monospace, monospace">Mono (JetBrains Mono)</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl" for="maxWords" data-i18n="maxwords">Máx. palavras</label>
+            <input id="maxWords" type="number" min="20" max="1000" value="150">
+          </div>
+          <div>
+            <label class="lbl" for="rotation" data-i18n="rotation">Rotação</label>
+            <select id="rotation">
+              <option value="none">0°</option>
+              <option value="orth">0°/90°</option>
+              <option value="mix">Variada</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl" for="minFont" data-i18n="minfont">Fonte min (px)</label>
+            <input id="minFont" type="number" min="8" max="80" value="12">
+          </div>
+          <div>
+            <label class="lbl" for="maxFont" data-i18n="maxfont">Fonte máx (px)</label>
+            <input id="maxFont" type="number" min="16" max="200" value="72">
+          </div>
+          <div class="full">
+            <label class="lbl" data-i18n="stopwords">Stopwords</label>
+            <div class="row">
+              <label><input type="checkbox" id="rmPT" checked> PT</label>
+              <label><input type="checkbox" id="rmEN"> EN</label>
+              <input id="extraStop" type="text" placeholder="stopwords extras (separe por vírgula)" />
+            </div>
+          </div>
+          <div class="full">
+            <label class="lbl" data-i18n="norm">Normalização</label>
+            <div class="row">
+              <label><input type="checkbox" id="lowercase" checked> <span data-i18n="lower">minúsculas</span></label>
+              <label><input type="checkbox" id="stripPunct" checked> <span data-i18n="punct">remover pontuação</span></label>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <div class="actions">
+        <button id="btnGenerate" class="primary" data-i18n="generate">Gerar nuvem</button>
+        <button id="btnDownload" class="secondary" data-i18n="download" disabled>Baixar PNG</button>
+        <span id="status" class="muted"></span>
+      </div>
+      <p id="pairsErrors" class="err hidden"></p>
+    </section>
+
+    <section class="canvas-wrap">
+      <canvas id="cloudCanvas" aria-label="Nuvem de palavras" role="img"></canvas>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span data-i18n="cite">Por favor, cite o repositório ao usar este app.</span>
+    <a href="https://github.com/SEU_USUARIO/wordcloud-app" target="_blank" rel="noopener">GitHub</a>
+  </footer>
+
+  <!-- Help Modal -->
+  <dialog id="helpModal">
+    <article>
+      <header>
+        <h2 data-i18n="help_title">Como usar</h2>
+        <button id="closeHelp" aria-label="Fechar">✕</button>
+      </header>
+      <div id="helpContent">
+        <!-- Conteúdo i18n injetado via JS -->
+      </div>
+    </article>
+  </dialog>
+
+  <!-- Lib (coloquei local para funcionar offline/GitHub Pages) -->
+  <script src="assets/js/wordcloud2.min.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
+
