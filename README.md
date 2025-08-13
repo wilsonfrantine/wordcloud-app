@@ -2,6 +2,10 @@
 
 A static, minimalist, and responsive app to generate **word clouds** directly in the browser. Ideal for GitHub Pages.
 
+## ✨ Use it up
+
+[Click on this link](wilsonfrantine.github.io/wordcloud-app/)
+
 ## ✨ Features
 - **Input modes**:
   - **Free text** (automatic frequency count)
