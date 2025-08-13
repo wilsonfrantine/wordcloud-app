@@ -1,11 +1,10 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Nuvem de Palavras • WordCloud</title>
-  <meta name="description" content="App simples e minimalista para criar nuvem de palavras.">
-  <!-- Google Fonts: três famílias -->
+  <title>WordCloud — Simple Word Cloud Generator</title>
+  <meta name="description" content="Minimal web app to generate high-resolution word clouds.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Merriweather:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
@@ -13,49 +12,45 @@
   <header class="topbar">
     <div class="brand">WordCloud</div>
     <div class="top-actions">
-      <button id="btnHelp" class="ghost">?</button>
-      <select id="langSelect" aria-label="Idioma">
-        <option value="pt-BR" selected>PT-BR</option>
-        <option value="en">EN</option>
-      </select>
+      <button id="btnHelp" class="ghost" type="button" aria-label="Help">?</button>
     </div>
   </header>
 
   <main class="container">
     <section class="panel">
-      <h1 data-i18n="title">Gerador de Nuvem de Palavras</h1>
+      <h1>Word Cloud Generator</h1>
 
       <div class="input-mode">
-        <label><input type="radio" name="mode" value="free" checked> <span data-i18n="mode_free">Texto livre</span></label>
-        <label><input type="radio" name="mode" value="pairs"> <span data-i18n="mode_pairs">Palavra + frequência</span></label>
+        <label><input type="radio" name="mode" value="free" checked> Free text</label>
+        <label><input type="radio" name="mode" value="pairs"> Word + frequency</label>
       </div>
 
       <div id="freeInputWrap">
-        <label class="lbl" for="freeInput" data-i18n="free_label">Cole ou digite seu texto:</label>
-        <textarea id="freeInput" placeholder="Cole seu texto aqui..."></textarea>
+        <label class="lbl" for="freeInput">Paste or type your text:</label>
+        <textarea id="freeInput" placeholder="Paste your text here..."></textarea>
       </div>
 
       <div id="pairsInputWrap" class="hidden">
-        <label class="lbl" for="pairsInput" data-i18n="pairs_label">Uma por linha (palavra,frequência):</label>
-        <textarea id="pairsInput" placeholder="ex. cafe,12&#10;abelhas,8&#10;biodiversidade,5"></textarea>
+        <label class="lbl" for="pairsInput">One per line (word,frequency):</label>
+        <textarea id="pairsInput" placeholder="e.g. coffee,12&#10;bees,8&#10;biodiversity,5"></textarea>
         <div class="row">
-          <label class="small" for="sepSelect" data-i18n="sep_label">Separador:</label>
+          <label class="small" for="sepSelect">Separator:</label>
           <select id="sepSelect">
-            <option value="comma">vírgula</option>
-            <option value="semicolon">ponto e vírgula</option>
+            <option value="comma">comma</option>
+            <option value="semicolon">semicolon</option>
             <option value="tab">tab</option>
             <option value="pipe">| (pipe)</option>
             <option value="custom">custom</option>
           </select>
-          <input id="sepCustom" class="hidden" type="text" placeholder="sep personalizado (regex ou caractere único)" />
+          <input id="sepCustom" class="hidden" type="text" placeholder="custom sep (regex or single char)" />
         </div>
       </div>
 
       <details class="opts">
-        <summary data-i18n="opts_title">Opções</summary>
+        <summary>Options</summary>
         <div class="grid-opts">
           <div>
-            <label class="lbl" data-i18n="palette">Paleta</label>
+            <label class="lbl">Palette</label>
             <select id="palette">
               <option value="viridis">Viridis</option>
               <option value="plasma">Plasma</option>
@@ -63,89 +58,145 @@
               <option value="warm">Warm</option>
               <option value="cool">Cool</option>
               <option value="mono">Mono</option>
-              <option value="contrast">Alto Contraste</option>
+              <option value="contrast">High Contrast</option>
             </select>
           </div>
+
           <div>
-            <label class="lbl" data-i18n="fontfam">Família de fonte</label>
+            <label class="lbl">Font family</label>
             <select id="fontFamily">
               <option value="Inter, system-ui, sans-serif">Sans (Inter)</option>
               <option value="Merriweather, Georgia, serif">Serif (Merriweather)</option>
               <option value="JetBrains Mono, ui-monospace, monospace">Mono (JetBrains Mono)</option>
             </select>
           </div>
+
           <div>
-            <label class="lbl" for="maxWords" data-i18n="maxwords">Máx. palavras</label>
+            <label class="lbl" for="maxWords">Max words</label>
             <input id="maxWords" type="number" min="20" max="1000" value="150">
           </div>
+
           <div>
-            <label class="lbl" for="rotation" data-i18n="rotation">Rotação</label>
+            <label class="lbl">Rotation</label>
             <select id="rotation">
               <option value="none">0°</option>
-              <option value="orth">0°/90°</option>
-              <option value="mix">Variada</option>
+              <option value="orth">0° / 90°</option>
+              <option value="mix">Mixed</option>
             </select>
           </div>
+
           <div>
-            <label class="lbl" for="minFont" data-i18n="minfont">Fonte min (px)</label>
-            <input id="minFont" type="number" min="8" max="80" value="12">
+            <label class="lbl">Min font</label>
+            <div class="stepper">
+              <button class="step" data-target="minFont" data-delta="-2" type="button">−</button>
+              <span id="minFontVal">52</span>px
+              <button class="step" data-target="minFont" data-delta="2" type="button">+</button>
+              <input id="minFont" type="hidden" value="52">
+            </div>
           </div>
           <div>
-            <label class="lbl" for="maxFont" data-i18n="maxfont">Fonte máx (px)</label>
-            <input id="maxFont" type="number" min="16" max="200" value="72">
+            <label class="lbl">Max font</label>
+            <div class="stepper">
+              <button class="step" data-target="maxFont" data-delta="-4" type="button">−</button>
+              <span id="maxFontVal">150</span>px
+              <button class="step" data-target="maxFont" data-delta="4" type="button">+</button>
+              <input id="maxFont" type="hidden" value="150">
+            </div>
           </div>
+
+          <!-- Display window size (CSS only). Final image is always 3200×2200 px. -->
+          <div>
+            <label class="lbl" for="wcWidth">Display width (px)</label>
+            <input id="wcWidth" type="number" min="360" max="4000" value="900">
+          </div>
+          <div>
+            <label class="lbl" for="wcHeight">Display height (px)</label>
+            <input id="wcHeight" type="number" min="300" max="3000" value="500">
+          </div>
+
           <div class="full">
-            <label class="lbl" data-i18n="stopwords">Stopwords</label>
+            <label class="lbl">Stopwords</label>
             <div class="row">
               <label><input type="checkbox" id="rmPT" checked> PT</label>
               <label><input type="checkbox" id="rmEN"> EN</label>
-              <input id="extraStop" type="text" placeholder="stopwords extras (separe por vírgula)" />
+              <input id="extraStop" type="text" placeholder="extra stopwords (comma-separated)" />
             </div>
           </div>
+
           <div class="full">
-            <label class="lbl" data-i18n="norm">Normalização</label>
+            <label class="lbl">Normalization</label>
             <div class="row">
-              <label><input type="checkbox" id="lowercase" checked> <span data-i18n="lower">minúsculas</span></label>
-              <label><input type="checkbox" id="stripPunct" checked> <span data-i18n="punct">remover pontuação</span></label>
+              <label><input type="checkbox" id="lowercase" checked> lowercase</label>
+              <label><input type="checkbox" id="stripPunct" checked> strip punctuation</label>
             </div>
           </div>
         </div>
       </details>
 
       <div class="actions">
-        <button id="btnGenerate" class="primary" data-i18n="generate">Gerar nuvem</button>
-        <button id="btnDownload" class="secondary" data-i18n="download" disabled>Baixar PNG</button>
-        <span id="status" class="muted"></span>
+        <button id="btnGenerate" class="primary" type="button">Generate cloud</button>
+	<button
+	  class="primary"
+  	type="button"
+ 	 onclick="
+    	   const c = document.getElementById('cloudCanvas');
+    	   if (!c) { alert('Canvas not found!'); return; }
+   	   const a = document.createElement('a');
+   	   a.download = 'wordcloud.png';
+   	   a.href = c.toDataURL('image/png');
+   	   a.click();
+  	  "
+	> 
+	 Download PNG
+	</button>
+
+
       </div>
+      <p class="small muted">To save: right-click the cloud and choose “Save image as…”. The file is high-resolution (3200×2200).</p>
+
       <p id="pairsErrors" class="err hidden"></p>
     </section>
 
-    <section class="canvas-wrap">
-      <canvas id="cloudCanvas" aria-label="Nuvem de palavras" role="img"></canvas>
+    <section class="canvas-wrap" id="canvasWrap">
+      <canvas id="cloudCanvas" aria-label="Word cloud" role="img"></canvas>
+      <div id="resizeHandle" title="Drag to resize"></div>
     </section>
   </main>
 
   <footer class="footer">
-    <span data-i18n="cite">Por favor, cite o repositório ao usar este app.</span>
-    <a href="https://github.com/SEU_USUARIO/wordcloud-app" target="_blank" rel="noopener">GitHub</a>
+    <span>Please cite the repository when using this app.</span>
+    <a id="repoLink" href="https://github.com/SEU_USUARIO/wordcloud-app" target="_blank" rel="noopener">GitHub</a>
   </footer>
 
-  <!-- Help Modal -->
   <dialog id="helpModal">
     <article>
       <header>
-        <h2 data-i18n="help_title">Como usar</h2>
-        <button id="closeHelp" aria-label="Fechar">✕</button>
+        <h2>How to use</h2>
+        <button id="closeHelp" type="button" aria-label="Close">✕</button>
       </header>
       <div id="helpContent">
-        <!-- Conteúdo i18n injetado via JS -->
+        <h3>Inputs</h3>
+        <ol>
+          <li><b>Free text:</b> paste any text; the app counts word frequency.</li>
+          <li><b>Word + frequency:</b> lines as <code>word,frequency</code>. Change the separator if needed.</li>
+        </ol>
+        <h3>Options</h3>
+        <ul>
+          <li><b>Palette</b> & <b>Font</b>.</li>
+          <li><b>Max words</b>, <b>Rotation</b>, <b>Min/Max font</b> (+/−).</li>
+          <li><b>Display size</b> is resizable — <i>final image is always 3200×2200 px (high-res)</i>.</li>
+          <li><b>Stopwords</b> EN/PT + extra list.</li>
+          <li><b>Normalization</b> (lowercase, strip punctuation).</li>
+        </ul>
+        <h3>Saving</h3>
+      	<p><b>Right-click</b> the cloud → <b>Save image as…</b> (high-res PNG).</p>
       </div>
     </article>
   </dialog>
 
-  <!-- Lib (coloquei local para funcionar offline/GitHub Pages) -->
-  <script src="assets/js/wordcloud2.min.js"></script>
-  <script src="assets/js/app.js"></script>
+  <!-- Scripts (wordcloud2 must come before app.js) -->
+  <script src="assets/js/wordcloud2.min.js" defer></script>
+  <script src="assets/js/app.js" defer></script>
 </body>
 </html>
 
