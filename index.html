@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>WordCloud — Simple Word Cloud Generator</title>
-  <meta name="description" content="Minimal web app to generate high-resolution word clouds.">
+  <meta name="description" content="Minimal web app to generate high-resolution word clouds (3200×2200).">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Merriweather:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
@@ -16,20 +16,57 @@
     </div>
   </header>
 
-  <main class="container">
-    <section class="panel">
-      <h1>Word Cloud Generator</h1>
+  <main class="main-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" aria-label="Controls">
+      <h1 class="h1">Word Cloud Generator</h1>
 
+      <p class="sub">High-res PNG (3200×2200)</p>
+       <!-- Text areas -->                                                                                                     <div id="freeInputWrap">                                                                                                  <label class="lbl" for="freeInput">Paste or type your text:</label>                                                     <textarea id="freeInput" placeholder="Paste your text here..."></textarea>
+      </div>
+      <!-- Mode -->
       <div class="input-mode">
         <label><input type="radio" name="mode" value="free" checked> Free text</label>
         <label><input type="radio" name="mode" value="pairs"> Word + frequency</label>
       </div>
 
-      <div id="freeInputWrap">
-        <label class="lbl" for="freeInput">Paste or type your text:</label>
-        <textarea id="freeInput" placeholder="Paste your text here..."></textarea>
-      </div>
+      <!-- Palette -->
+      <section>
+        <label class="lbl">Palette</label>
+        <fieldset class="palette-group" role="radiogroup" aria-label="Palette">
+          <label class="palette-item"><input type="radio" name="palette" value="viridis" checked><span class="swatch" data-p="viridis"></span><span class="pname">Viridis</span></label>
+          <label class="palette-item"><input type="radio" name="palette" value="plasma"><span class="swatch" data-p="plasma"></span><span class="pname">Plasma</span></label>
+          <label class="palette-item"><input type="radio" name="palette" value="cividis"><span class="swatch" data-p="cividis"></span><span class="pname">Cividis</span></label>
+          <label class="palette-item"><input type="radio" name="palette" value="warm"><span class="swatch" data-p="warm"></span><span class="pname">Warm</span></label>
+          <label class="palette-item"><input type="radio" name="palette" value="cool"><span class="swatch" data-p="cool"></span><span class="pname">Cool</span></label>
+          <label class="palette-item"><input type="radio" name="palette" value="mono"><span class="swatch" data-p="mono"></span><span class="pname">Mono</span></label>
+          <label class="palette-item"><input type="radio" name="palette" value="contrast"><span class="swatch" data-p="contrast"></span><span class="pname">Contrast</span></label>
+        </fieldset>
+      </section>
 
+      <!-- Font + sliders -->
+      <section class="slider-row">
+        <div class="tool">
+          <label class="tool-label" for="fontFamily">Font</label>
+          <select id="fontFamily">
+            <option value="Inter, system-ui, sans-serif">Sans (Inter)</option>
+            <option value="Merriweather, Georgia, serif">Serif (Merriweather)</option>
+            <option value="JetBrains Mono, ui-monospace, monospace">Mono (JetBrains Mono)</option>
+          </select>
+        </div>
+        <div class="tool slider">
+          <label class="tool-label" for="minFont">Min font</label>
+          <input id="minFont" type="range" min="8" max="200" value="90" step="1" />
+          <output id="minFontVal" for="minFont">90 px</output>
+        </div>
+        <div class="tool slider">
+          <label class="tool-label" for="maxFont">Max font</label>
+          <input id="maxFont" type="range" min="12" max="240" value="150" step="1" />
+          <output id="maxFontVal" for="maxFont">150 px</output>
+        </div>
+      </section>
+
+          
       <div id="pairsInputWrap" class="hidden">
         <label class="lbl" for="pairsInput">One per line (word,frequency):</label>
         <textarea id="pairsInput" placeholder="e.g. coffee,12&#10;bees,8&#10;biodiversity,5"></textarea>
@@ -44,76 +81,25 @@
           </select>
           <input id="sepCustom" class="hidden" type="text" placeholder="custom sep (regex or single char)" />
         </div>
+        <p id="pairsErrors" class="err hidden"></p>
       </div>
 
+      <!-- Advanced -->
       <details class="opts">
-        <summary>Options</summary>
+        <summary>Advanced</summary>
         <div class="grid-opts">
-          <div>
-            <label class="lbl">Palette</label>
-            <select id="palette">
-              <option value="viridis">Viridis</option>
-              <option value="plasma">Plasma</option>
-              <option value="cividis">Cividis</option>
-              <option value="warm">Warm</option>
-              <option value="cool">Cool</option>
-              <option value="mono">Mono</option>
-              <option value="contrast">High Contrast</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="lbl">Font family</label>
-            <select id="fontFamily">
-              <option value="Inter, system-ui, sans-serif">Sans (Inter)</option>
-              <option value="Merriweather, Georgia, serif">Serif (Merriweather)</option>
-              <option value="JetBrains Mono, ui-monospace, monospace">Mono (JetBrains Mono)</option>
-            </select>
-          </div>
-
           <div>
             <label class="lbl" for="maxWords">Max words</label>
             <input id="maxWords" type="number" min="20" max="1000" value="150">
           </div>
-
           <div>
-            <label class="lbl">Rotation</label>
+            <label class="lbl" for="rotation">Rotation</label>
             <select id="rotation">
               <option value="none">0°</option>
               <option value="orth">0° / 90°</option>
               <option value="mix">Mixed</option>
             </select>
           </div>
-
-          <div>
-            <label class="lbl">Min font</label>
-            <div class="stepper">
-              <button class="step" data-target="minFont" data-delta="-2" type="button">−</button>
-              <span id="minFontVal">52</span>px
-              <button class="step" data-target="minFont" data-delta="2" type="button">+</button>
-              <input id="minFont" type="hidden" value="52">
-            </div>
-          </div>
-          <div>
-            <label class="lbl">Max font</label>
-            <div class="stepper">
-              <button class="step" data-target="maxFont" data-delta="-4" type="button">−</button>
-              <span id="maxFontVal">150</span>px
-              <button class="step" data-target="maxFont" data-delta="4" type="button">+</button>
-              <input id="maxFont" type="hidden" value="150">
-            </div>
-          </div>
-
-          <!-- Display window size (CSS only). Final image is always 3200×2200 px. -->
-          <div>
-            <label class="lbl" for="wcWidth">Display width (px)</label>
-            <input id="wcWidth" type="number" min="360" max="4000" value="900">
-          </div>
-          <div>
-            <label class="lbl" for="wcHeight">Display height (px)</label>
-            <input id="wcHeight" type="number" min="300" max="3000" value="500">
-          </div>
-
           <div class="full">
             <label class="lbl">Stopwords</label>
             <div class="row">
@@ -122,52 +108,47 @@
               <input id="extraStop" type="text" placeholder="extra stopwords (comma-separated)" />
             </div>
           </div>
-
-          <div class="full">
-            <label class="lbl">Normalization</label>
-            <div class="row">
-              <label><input type="checkbox" id="lowercase" checked> lowercase</label>
-              <label><input type="checkbox" id="stripPunct" checked> strip punctuation</label>
-            </div>
+          <!-- Display window (CSS only) — final is always 3200×2200 -->
+          <div>
+            <label class="lbl" for="wcWidth">Display width (px)</label>
+            <input id="wcWidth" type="number" min="360" max="4000" value="900">
+          </div>
+          <div>
+            <label class="lbl" for="wcHeight">Display height (px)</label>
+            <input id="wcHeight" type="number" min="300" max="3000" value="560">
           </div>
         </div>
       </details>
 
-      <div class="actions">
-        <button id="btnGenerate" class="primary" type="button">Generate cloud</button>
-	<button
-	  class="primary"
-  	type="button"
- 	 onclick="
-    	   const c = document.getElementById('cloudCanvas');
-    	   if (!c) { alert('Canvas not found!'); return; }
-   	   const a = document.createElement('a');
-   	   a.download = 'wordcloud.png';
-   	   a.href = c.toDataURL('image/png');
-   	   a.click();
-  	  "
-	> 
-	 Download PNG
-	</button>
-
-
+      <!-- Sticky actions -->
+      <div class="actions-sticky">
+        <button id="btnGenerate" class="primary" type="button">Generate</button>
+        <button class="secondary" type="button" title="Ctrl/Cmd + S"
+          onclick="
+            const c=document.getElementById('cloudCanvas');
+            if(!c){alert('Canvas not found');return;}
+            const a=document.createElement('a'); a.download='wordcloud.png'; a.href=c.toDataURL('image/png'); a.click();
+          ">
+          Download PNG
+        </button>
       </div>
-      <p class="small muted">To save: right-click the cloud and choose “Save image as…”. The file is high-resolution (3200×2200).</p>
 
-      <p id="pairsErrors" class="err hidden"></p>
-    </section>
+    </aside>
 
-    <section class="canvas-wrap" id="canvasWrap">
-      <canvas id="cloudCanvas" aria-label="Word cloud" role="img"></canvas>
-      <div id="resizeHandle" title="Drag to resize"></div>
+    <!-- Canvas area -->
+    <section class="canvas-card">
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="cloudCanvas" aria-label="Word cloud" role="img"></canvas>
+        <div id="resizeHandle" title="Drag to resize"></div>
+      </div>
+      <footer class="footer">
+        <span>Please cite the repository when using this app.</span>
+        <a id="repoLink" href="https://github.com/SEU_USUARIO/wordcloud-app" target="_blank" rel="noopener">GitHub</a>
+      </footer>
     </section>
   </main>
 
-  <footer class="footer">
-    <span>Please cite the repository when using this app.</span>
-    <a id="repoLink" href="https://github.com/SEU_USUARIO/wordcloud-app" target="_blank" rel="noopener">GitHub</a>
-  </footer>
-
+  <!-- Help Modal -->
   <dialog id="helpModal">
     <article>
       <header>
@@ -175,26 +156,16 @@
         <button id="closeHelp" type="button" aria-label="Close">✕</button>
       </header>
       <div id="helpContent">
-        <h3>Inputs</h3>
-        <ol>
-          <li><b>Free text:</b> paste any text; the app counts word frequency.</li>
-          <li><b>Word + frequency:</b> lines as <code>word,frequency</code>. Change the separator if needed.</li>
-        </ol>
-        <h3>Options</h3>
         <ul>
-          <li><b>Palette</b> & <b>Font</b>.</li>
-          <li><b>Max words</b>, <b>Rotation</b>, <b>Min/Max font</b> (+/−).</li>
-          <li><b>Display size</b> is resizable — <i>final image is always 3200×2200 px (high-res)</i>.</li>
-          <li><b>Stopwords</b> EN/PT + extra list.</li>
-          <li><b>Normalization</b> (lowercase, strip punctuation).</li>
+          <li>Paste free text or provide “word,frequency” per line.</li>
+          <li>Pick a palette, font, and adjust min/max font sliders.</li>
+          <li>Click <b>Generate</b>. Right-click canvas to save or use <b>Download PNG</b>.</li>
+          <li>Final export is always 3200×2200 pixels (hi-res).</li>
         </ul>
-        <h3>Saving</h3>
-      	<p><b>Right-click</b> the cloud → <b>Save image as…</b> (high-res PNG).</p>
       </div>
     </article>
   </dialog>
 
-  <!-- Scripts (wordcloud2 must come before app.js) -->
   <script src="assets/js/wordcloud2.min.js" defer></script>
   <script src="assets/js/app.js" defer></script>
 </body>
