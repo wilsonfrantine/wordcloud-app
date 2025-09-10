@@ -4,7 +4,7 @@ A static, minimalist, and responsive app to generate **word clouds** directly in
 
 ## ✨ Use it up
 
-[Click on this link](https://www.wilsonfrantine.github.io/wordcloud-app/)
+[Click on this link](https://wilsonfrantine.github.io/wordcloud-app/)
 
 ## ✨ Features
 - **Input modes**:
